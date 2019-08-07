@@ -97,14 +97,6 @@ while [ "$1" ]; do
     shift
 done
 
-if [ ! "$TI_DOCS" ]; then
-    if [ "$TI_ROOT" ]; then
-        TI_DOCS=${TI_ROOT}/titanium_mobile/apidoc
-    else
-        echo "No doc root \$TI_DOCS and \$TI_ROOT not defined. Exiting."
-        exit 1
-    fi
-fi
 if [ ! "$JSDUCK" ]; then
     if [ "$TI_ROOT" ]; then
         JSDUCK=${TI_ROOT}/jsduck
@@ -215,8 +207,8 @@ if [ -d "$TI_ROOT/titanium_mobile_windows" ]; then
   popd
 fi
 
-echo "starting node ${TI_DOCS}/docgen.js -f jsduck -o ./build/ $module_dirs $addon_win\n"
-node ${TI_DOCS}/docgen.js -f jsduck -o ./build/ $module_dirs $addon_win
+echo "starting npm run docgen -- -f jsduck $module_dirs $addon_win\n"
+npm run docgen -- -f jsduck $module_dirs $addon_win
 
 if [ $addon_guidesdir ]; then
     echo "starting $addon_guidesdir\n"
@@ -263,7 +255,7 @@ if [ $production_build ] ; then
 
     ## Generate Solr content
     echo "Generating Solr content for indexing..."
-    node $TI_DOCS/docgen -f solr -o ./build/ $module_dirs $addon_win
+    npm run docgen -- -f solr $module_dirs $addon_win
     mkdir -p $outdir/../data/solr
     cp ./build/api_solr.json $outdir/../data/solr/.
     if [ $include_alloy ]; then
@@ -300,4 +292,4 @@ cp ./resources/mock_video.png $outdir/resources/images/mock_video.png
 cp ./resources/codestrong_logo_short.png $outdir/resources/images/codestrong_logo_short.png
 
 # Copy API images folder to $outdir
-cp -r $TI_DOCS/images $outdir/.
+cp -r node_modules/titanium-docgen/images $outdir/.
